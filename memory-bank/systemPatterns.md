@@ -1,21 +1,30 @@
 # System Patterns
 
 ## Architecture Pattern
-Single monorepo with independently runnable applications:
+Single monorepo on disk with independently runnable applications:
 
 ```text
 app/           Tauri desktop app
 web/frontend/  Svelte web frontend
-web/backend/   Laravel API backend
+web/backend/   Laravel API backend, local/private and ignored by Git
 docs/          project documentation
 docker/        deployment support
 scripts/       local automation
 ```
 
+## Repository Privacy Pattern
+`web/backend/` is intentionally ignored by Git because the user does not want the backend to be public.
+
+Rules:
+- Keep `web/backend/` in the local monorepo structure.
+- Keep `.gitignore` entry `web/backend/` unless the user explicitly says to publish/track backend code.
+- Do not treat hidden backend files as an accidental ignore problem.
+- Public repository work should focus on non-private files unless the user explicitly allows backend tracking.
+
 ## Backend Pattern
 Laravel REST API-first architecture.
 
-Recommended structure:
+Recommended local structure:
 ```text
 app/Http/Controllers/Api/
 app/Http/Requests/

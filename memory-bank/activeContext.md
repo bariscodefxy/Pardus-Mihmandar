@@ -1,78 +1,62 @@
 # Active Context
 
 ## Current Phase
-Initial scaffold phase. The monorepo structure and first source skeletons have been created. No dependency installation has completed yet.
+Backend runtime setup was completed locally, but the backend directory is intentionally private and ignored by Git. Frontend and desktop dependency installation remain blocked by missing Node/npm and Rust/Cargo.
 
 ## Latest User Request
-Update the project Memory Bank after the initial scaffold.
+Hide the backend repository again and record in Memory Bank that this was intentional because the backend should not be public.
+
+## Important Repository Privacy Decision
+`web/backend/` must remain ignored in `.gitignore` because the user does not want the backend to be public.
+
+This is intentional and must not be treated as a mistake. Do not remove the `web/backend/` ignore rule unless the user explicitly asks to make backend files public/tracked.
 
 ## Latest Work Completed
-Created the initial project scaffold:
-- `web/backend` Laravel-oriented API skeleton
-- `web/frontend` SvelteKit-oriented website/dashboard skeleton
-- `app` Tauri + Svelte + Rust desktop skeleton
-- `docs` project documentation
-- `docker` deployment stubs
-- `scripts` helper scripts
-- Root README/configuration files
+- Restored `.gitignore` rule: `web/backend/`.
+- Verified Git status no longer lists backend files as untracked.
+- Backend still exists locally and was previously made runnable/testable, but it is intentionally hidden from Git.
 
-## Backend Scaffold Details
-Backend includes:
-- `composer.json`
-- `routes/api.php`
-- API controllers for auth, credits, chat, providers, and devices
-- Form requests for auth, chat, and provider settings
-- Models for users, credit accounts, transactions, AI requests, provider settings, and devices
-- Core migration for users, credits, AI requests, provider settings, devices, workspaces, notes, tasks, snippets
-- Services for credits, hosted AI skeleton, and provider tests
-- OpenAPI skeleton at `web/backend/storage/api-docs/openapi.yaml`
-- Dockerfile and docker-compose
-- Basic feature tests for auth and credits
-
-## Web Frontend Scaffold Details
-Web frontend includes:
-- SvelteKit-oriented config files
-- Dark-mode-first design tokens
-- Landing page
-- Login/register pages
-- Dashboard, credits, usage, providers, docs, settings skeleton pages
-- API client helper
-- Shared `PageCard` component
-
-## Desktop Scaffold Details
-Desktop app includes:
-- Tauri + Svelte + TypeScript config files
-- Main desktop shell UI
-- Provider mode selector
-- Local provider selector
-- Chat UI skeleton
-- Safe command review panel
-- TypeScript command risk classifier
-- Rust Tauri commands for system info and provider connection-test placeholders
+## Local Backend Status
+Completed locally before rehiding backend:
+- Ran `composer install` successfully in `web/backend` using workspace-local Composer temp/cache directories.
+- Added Laravel runtime entrypoints: `artisan`, `bootstrap/app.php`, `bootstrap/providers.php`, `public/index.php`, and `routes/console.php`.
+- Added minimal Laravel config files for app, auth, database, cache, session, logging, hashing, Sanctum, and Mihmandar settings.
+- Added `AppServiceProvider` with named rate limiters for `auth` and `chat` routes.
+- Added Sanctum `personal_access_tokens` migration.
+- Added `phpunit.xml` for SQLite in-memory tests.
+- Copied root `.env.example` into `web/backend/.env` and generated `APP_KEY`.
+- Added `Database\\Factories\\` autoload-dev mapping in backend `composer.json`.
+- Fixed authenticated controllers to use `request()->user()->id` instead of route parameter `request()->id()`.
 
 ## Verification Completed
-- Backend PHP files were normalized to UTF-8 without BOM.
-- JSON/config/source files were normalized to UTF-8 without BOM where needed.
-- PHP syntax checks passed for all 27 backend PHP files.
-- JSON validation passed for backend/frontend/app JSON config files.
-- Repository currently has 90 files.
+- `composer install` completed successfully and created local `web/backend/composer.lock`.
+- `php artisan about` successfully booted Laravel 12.58.0 with PHP 8.5.1 after temp variables were redirected.
+- `php artisan test` passed: 2 tests, 8 assertions.
+- Backend tests passing:
+  - `Tests\\Feature\\AuthTest`
+  - `Tests\\Feature\\CreditTest`
 
 ## Current Constraints
-- Composer is installed, but it reported a Windows temp directory issue: PHP temp directory `C:\Users\Baris\AppData\Local\Temp` does not exist or is not writable to Composer.
 - `npm` is not available in PATH.
-- `cargo` is not available in PATH.
-- Full backend/frontend/desktop dependency installation and builds have not been run.
-- Current scaffold is manually created source structure, not yet a generated and dependency-installed Laravel/Svelte/Tauri app.
+- `cargo` and `rustc` are not available in PATH.
+- `winget` and `choco` are not available in PATH, so Node/Rust cannot be installed automatically from this shell.
+- Symfony Process/Laravel commands need `TMP` and `TEMP` redirected to a writable workspace-local temp directory on this machine.
+- PowerShell constrained language mode emits a noisy output-encoding warning; it has been non-blocking.
 
 ## Next Recommended Step
-Fix local tooling and dependency installation:
-1. Create/fix the writable Composer/PHP temp directory.
-2. Install Node.js/npm or add it to PATH.
-3. Install Rust/Cargo and Tauri prerequisites or add them to PATH.
-4. Run `composer install` in `web/backend`.
-5. Run `npm install` in `web/frontend`.
-6. Run `npm install` in `app`.
-7. Run backend tests and frontend/desktop builds.
+Install or expose Node.js/npm and Rust/Cargo in PATH, then run:
+1. `cd web/frontend && npm install && npm run build`
+2. `cd app && npm install && npm run build`
+3. After Rust/Cargo and Tauri prerequisites are ready: `cd app && npm run tauri dev`
 
-## Important Constraint
+For backend commands on this machine, keep backend local/private and set temp variables first:
+```powershell
+cd C:\Users\Baris\Desktop\projeler\Pardus-Mihmandar\web\backend
+New-Item -ItemType Directory -Force .tmp\php-temp | Out-Null
+$env:TMP=(Resolve-Path .tmp\php-temp).Path
+$env:TEMP=(Resolve-Path .tmp\php-temp).Path
+php artisan test
+```
+
+## Important Safety Constraint
 Do not let AI-generated commands run automatically. The app may explain and prepare commands, but execution must require explicit approval through a safety pipeline.

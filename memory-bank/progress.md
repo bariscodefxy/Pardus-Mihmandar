@@ -16,15 +16,36 @@ Created files:
 ### Initial Monorepo Scaffold Created
 Created:
 - Root `README.md`, `.env.example`, `.gitignore`, `LICENSE`
-- `web/backend` Laravel-oriented API skeleton
+- `web/backend` Laravel-oriented API skeleton locally
 - `web/frontend` SvelteKit-oriented website/dashboard skeleton
 - `app` Tauri + Svelte + Rust desktop skeleton
 - `docs` architecture/API/security/development/MVP docs
 - `docker` backend/nginx deployment stubs
 - `scripts` setup/dev/test helpers
 
+### Backend Privacy Decision
+The user intentionally wants `web/backend/` hidden from Git because the backend should not be public.
+
+Current rule:
+- `.gitignore` includes `web/backend/`.
+- Do not remove this ignore rule unless the user explicitly asks to publish/track backend files.
+- Treat backend as local/private implementation, even though it is part of the monorepo on disk.
+
+### Backend Runtime Setup Completed Locally
+Completed locally before rehiding backend from Git:
+- Installed backend Composer dependencies successfully.
+- Created local `web/backend/composer.lock`.
+- Added Laravel runtime files: `artisan`, `bootstrap/app.php`, `bootstrap/providers.php`, `public/index.php`, `routes/console.php`.
+- Added minimal Laravel config files needed to boot and test the API.
+- Added `AppServiceProvider` and named rate limiters for `auth` and `chat`.
+- Added Sanctum personal access token migration.
+- Added `phpunit.xml` using SQLite in-memory database for tests.
+- Generated backend `APP_KEY` in ignored local `.env`.
+- Fixed authenticated user-id access in API controllers.
+- Added backend factory autoloading to `composer.json`.
+
 ### Backend Scaffold
-Added:
+Current local backend includes:
 - API route skeleton in `web/backend/routes/api.php`
 - Auth, credit, chat, provider, and device controllers
 - Register/login/chat/provider request validation classes
@@ -63,27 +84,28 @@ Completed:
 - PHP syntax check passed for 27 backend PHP files.
 - JSON validation passed for backend/frontend/app JSON config files.
 - UTF-8 BOM was stripped from PHP/JSON/source files where it blocked parsing.
-- File count after scaffold: 90 files.
+- `php artisan about` boots the backend when `TMP` and `TEMP` point to workspace-local temp.
+- `php artisan test` passes: 2 tests, 8 assertions.
+- Git status after rehiding backend no longer lists backend files.
 
 ### Current Status
-- Monorepo structure exists.
-- Backend source files are scaffolded but dependencies are not installed.
+- Backend dependencies are installed and backend tests pass locally, but `web/backend/` is intentionally ignored/private.
 - Web frontend source files are scaffolded but dependencies are not installed.
 - Desktop app source files are scaffolded but dependencies are not installed.
-- Full builds/tests have not run because required tooling is incomplete.
+- Full frontend/desktop builds have not run because Node/Rust tooling is unavailable.
 
 ### Local Tooling Notes
-- Composer is available.
-- Composer reported PHP temp directory problem: `C:\Users\Baris\AppData\Local\Temp` does not exist or is not writable.
+- PHP is available as `C:\php\php.exe`, version 8.5.1.
+- Composer is available, version 2.9.5.
+- Composer dependency install required escalation for network access to Packagist.
+- Laravel/Symfony commands need workspace-local `TMP` and `TEMP`; default `C:\Users\Baris\AppData\Local\Temp` is not writable/usable.
 - `npm` is not available in PATH.
-- `cargo` is not available in PATH.
-- PowerShell runs in constrained language mode and prints a noisy output-encoding warning; this warning has been non-blocking.
+- `cargo` and `rustc` are not available in PATH.
+- `winget` and `choco` are not available in PATH.
+- PowerShell constrained language mode prints a noisy output-encoding warning; this warning is non-blocking.
 
 ### Next Recommended Step
-Fix local tooling, then install dependencies and run verification:
-1. Fix Composer/PHP temp directory.
-2. Install Node.js/npm or add it to PATH.
-3. Install Rust/Cargo and Tauri prerequisites or add them to PATH.
-4. Run backend install/tests.
-5. Run web frontend install/build.
-6. Run desktop install/build.
+Install or expose Node.js/npm and Rust/Cargo in PATH, then verify frontend and desktop:
+1. `cd web/frontend && npm install && npm run build`
+2. `cd app && npm install && npm run build`
+3. `cd app && npm run tauri dev` after Rust/Cargo and Tauri prerequisites are ready.
