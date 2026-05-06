@@ -1,0 +1,17 @@
+:root {
+  color-scheme: dark;
+  --bg: #070a0e;
+  --panel: #0d131a;
+  --panel-soft: #131b24;
+  --border: #26313d;
+  --text: #edf4f8;
+  --muted: #91a0af;
+  --primary: #f2b84b;
+  --danger: #ff6b6b;
+  --terminal: #76e39b;
+  font-family: "Aptos", "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
