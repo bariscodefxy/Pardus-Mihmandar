@@ -17,3 +17,5 @@ web/backend/
 app/src-tauri/target/
 .tmp/
 .phpunit.result.cache
+.tools/
+app/src-tauri/gen/

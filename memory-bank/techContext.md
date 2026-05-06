@@ -29,14 +29,20 @@
 ## Development Environment
 Primary user environment is Windows PowerShell. The product target is Debian and Debian-based Linux distributions.
 
-Current local tooling observations from 2026-05-06:
+Current local tooling observations:
 - PHP is available as `C:\php\php.exe`, reported version 8.5.1.
 - Composer is available, reported version 2.9.5.
-- Composer reports `C:\Users\Baris\AppData\Local\Temp` missing or not writable.
-- `npm` is not available in PATH.
-- `cargo` is not available in PATH.
+- Composer initially reported `C:\Users\Baris\AppData\Local\Temp` missing or not writable.
+- Portable Node.js was downloaded into `.tools/node`, version `v24.15.0`, with npm `11.12.1`.
+- Workspace-local Rust was installed into `.tools/rustup` and `.tools/cargo`.
+- Direct Rust toolchain binaries work from `.tools/rustup/toolchains/stable-x86_64-pc-windows-msvc/bin`:
+  - `rustc 1.95.0 (59807616e 2026-04-14)`
+  - `cargo 1.95.0 (f2d3ce0bd 2026-03-21)`
+- Rustup shim under `.tools/cargo/bin` has metadata/path issues; prefer direct toolchain binaries for commands.
+- `winget` and `choco` are not available in PATH.
 - PowerShell constrained language mode blocks some .NET object creation and emits a noisy output-encoding warning.
 - PHP one-off scripts worked for BOM normalization and validation.
+- Vite/esbuild builds may require escalation because child process spawning can hit `spawn EPERM` in the sandbox.
 
 ## Backend Responsibilities
 - Auth
@@ -90,3 +96,4 @@ Current local tooling observations from 2026-05-06:
 - Use accessible labels.
 - Keep strict TypeScript.
 - Keep generated text/source files UTF-8 without BOM when PHP/JSON parsers are involved.
+- Keep `web/backend/` ignored unless the user explicitly asks to publish backend files.

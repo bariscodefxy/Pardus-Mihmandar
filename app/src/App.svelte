@@ -11,14 +11,14 @@
   <aside class="sidebar">
     <div class="brand">Pardus Mihmandar</div>
     <nav>
-      <a class="active">Chat</a>
-      <a>Workspace</a>
-      <a>Notes</a>
-      <a>Tasks</a>
-      <a>Snippets</a>
-      <a>Diagnostics</a>
-      <a>Providers</a>
-      <a>Settings</a>
+      <button class="active" type="button">Chat</button>
+      <button type="button">Workspace</button>
+      <button type="button">Notes</button>
+      <button type="button">Tasks</button>
+      <button type="button">Snippets</button>
+      <button type="button">Diagnostics</button>
+      <button type="button">Providers</button>
+      <button type="button">Settings</button>
     </nav>
   </aside>
 
@@ -72,8 +72,8 @@
   .sidebar { border-right: 1px solid var(--border); background: #090d12; padding: 22px; }
   .brand { font-weight: 800; letter-spacing: -.03em; margin-bottom: 28px; }
   nav { display: grid; gap: 8px; }
-  nav a { color: var(--muted); padding: 11px 12px; border-radius: 12px; }
-  nav a.active { background: rgba(242,184,75,.12); color: var(--primary); }
+  nav button { color: var(--muted); padding: 11px 12px; border-radius: 12px; background: transparent; border: 0; text-align: left; }
+  nav button.active { background: rgba(242,184,75,.12); color: var(--primary); }
   .main { padding: 28px; }
   .topbar { display: flex; justify-content: space-between; gap: 16px; align-items: start; margin-bottom: 24px; }
   .eyebrow { color: var(--primary); text-transform: uppercase; letter-spacing: .14em; font-size: .72rem; }
