@@ -9,6 +9,19 @@
     content: string;
     source?: 'hosted' | 'local';
   };
+  type SafetyReview = {
+    command: string;
+    risk: ReturnType<typeof classifyCommandRisk>;
+    whatItDoes: string;
+    whyNeeded: string;
+    whatCanGoWrong: string;
+    saferAlternatives: string[];
+  };
+  type CommandSuggestion = {
+    id: string;
+    command: string;
+    sourceMessage: string;
+  };
 
   let email = '';
   let password = '';
@@ -41,6 +54,10 @@
 
   let command = 'sudo apt remove example-package';
   $: risk = classifyCommandRisk(command);
+  let safetyReview: SafetyReview | null = null;
+  let reviewedConfirm = false;
+  let executionMessage = '';
+  let commandSuggestions: CommandSuggestion[] = [];
 
   $: session = get(sessionStore);
 
@@ -147,6 +164,7 @@
           source: providerMode === 'hosted' ? 'hosted' : 'local'
         }
       ];
+      commandSuggestions = extractCommandSuggestions(answer);
 
       if (providerMode === 'hosted') {
         const credit = await desktopApi.credits(current.token);
@@ -299,6 +317,107 @@
     }
   }
 
+  function buildSafetyReview(inputCommand: string): SafetyReview {
+    const currentRisk = classifyCommandRisk(inputCommand);
+    const risky = currentRisk.level === 'high';
+
+    return {
+      command: inputCommand.trim(),
+      risk: currentRisk,
+      whatItDoes: risky
+        ? 'This command can change or remove system-level resources, packages, permissions, or service state.'
+        : 'This command appears informational or low-impact, but should still be reviewed before execution.',
+      whyNeeded: risky
+        ? 'It may be required for troubleshooting, package cleanup, or system recovery with proper context.'
+        : 'It may help inspect system state or gather diagnostics for issue resolution.',
+      whatCanGoWrong: risky
+        ? 'You may remove required packages, break permissions, disable services, or make the system unstable.'
+        : 'Unexpected output or minor state changes can still confuse beginner users if context is missing.',
+      saferAlternatives: risky
+        ? [
+            'Run a dry-run or info command first (for example apt -s).',
+            'Take a backup/snapshot before system changes.',
+            'Use read-only inspection commands to verify target paths/services.'
+          ]
+        : ['Explain the command step-by-step before running.', 'Validate command arguments and target paths first.']
+    };
+  }
+
+  function reviewCommand(): void {
+    const input = command.trim();
+    executionMessage = '';
+    reviewedConfirm = false;
+
+    if (!input) {
+      safetyReview = null;
+      return;
+    }
+
+    safetyReview = buildSafetyReview(input);
+    void logSafetyEvent('command.reviewed', safetyReview);
+  }
+
+  function useSuggestedCommand(inputCommand: string): void {
+    command = inputCommand;
+    reviewCommand();
+  }
+
+  function extractCommandSuggestions(text: string): CommandSuggestion[] {
+    const lines = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const candidates = lines
+      .map((line) => line.replace(/^[-*`]+\s*/, '').replace(/`/g, ''))
+      .filter((line) =>
+        /^(sudo|apt|apt-get|systemctl|journalctl|ls|cd|pwd|cat|grep|find|chmod|chown|rm|rmdir|dd|mkfs|mount|umount)\b/.test(line)
+      );
+
+    return [...new Set(candidates)].slice(0, 5).map((candidate, index) => ({
+      id: `${Date.now()}-${index}`,
+      command: candidate,
+      sourceMessage: 'assistant'
+    }));
+  }
+
+  function requestExecutionApproval(): void {
+    if (!safetyReview) {
+      executionMessage = 'Review a command first.';
+      return;
+    }
+
+    if (!reviewedConfirm) {
+      executionMessage = 'You must confirm the safety review before requesting execution approval.';
+      return;
+    }
+
+    executionMessage = 'Execution request prepared. Auto-run is disabled; manual approval pipeline is required.';
+    void logSafetyEvent('command.approval_requested', safetyReview);
+  }
+
+  async function logSafetyEvent(event: string, review: SafetyReview | null): Promise<void> {
+    const current = get(sessionStore);
+    if (!current.token || !review) {
+      return;
+    }
+
+    try {
+      await desktopApi.createAuditLog(current.token, {
+        event,
+        actor: 'desktop_app',
+        level: review.risk.level === 'high' ? 'high_risk' : 'info',
+        metadata: {
+          command: review.command,
+          risk_level: review.risk.level,
+          reasons: review.risk.reasons
+        }
+      });
+    } catch {
+      // Keep desktop flow resilient if backend migration/endpoint is not yet available.
+    }
+  }
+
   if (session?.token) {
     void loadWorkspace();
   }
@@ -370,18 +489,58 @@
           <button on:click={sendMessage} disabled={chatLoading || !chatInput.trim()}>
             {chatLoading ? 'Sending...' : 'Send message'}
           </button>
+
+          {#if commandSuggestions.length > 0}
+            <section class="suggestions">
+              <h3>Detected command suggestions</h3>
+              {#each commandSuggestions as item}
+                <div class="suggestion-item">
+                  <code>{item.command}</code>
+                  <button type="button" class="secondary" on:click={() => useSuggestedCommand(item.command)}>
+                    Review safely
+                  </button>
+                </div>
+              {/each}
+            </section>
+          {/if}
         </div>
 
         <aside class="card safety">
           <h2>Command safety review</h2>
           <input bind:value={command} aria-label="Command to review" />
-          <p class:risky={risk.level === 'high'}>Risk level: {risk.level}</p>
-          <ul>
-            {#each risk.reasons as reason}
-              <li>{reason}</li>
-            {/each}
-          </ul>
-          <button class="danger">Require explicit confirmation</button>
+          <p class:risky={risk.level === 'high'}>Live risk signal: {risk.level}</p>
+          <button class="secondary" type="button" on:click={reviewCommand}>Generate safety review</button>
+
+          {#if safetyReview}
+            <div class="review-card">
+              <p><strong>Command:</strong> <code>{safetyReview.command}</code></p>
+              <p class:risky={safetyReview.risk.level === 'high'}><strong>Risk level:</strong> {safetyReview.risk.level}</p>
+              <p><strong>What it does:</strong> {safetyReview.whatItDoes}</p>
+              <p><strong>Why it may be needed:</strong> {safetyReview.whyNeeded}</p>
+              <p><strong>What can go wrong:</strong> {safetyReview.whatCanGoWrong}</p>
+              <p><strong>Risk matches:</strong></p>
+              <ul>
+                {#each safetyReview.risk.reasons as reason}
+                  <li>{reason}</li>
+                {/each}
+              </ul>
+              <p><strong>Safer alternatives:</strong></p>
+              <ul>
+                {#each safetyReview.saferAlternatives as alt}
+                  <li>{alt}</li>
+                {/each}
+              </ul>
+
+              <label class="confirm-line">
+                <input type="checkbox" bind:checked={reviewedConfirm} />
+                I reviewed impact and confirm explicit approval is required.
+              </label>
+              <button class="danger" type="button" on:click={requestExecutionApproval} disabled={!reviewedConfirm}>
+                Request manual approval
+              </button>
+              {#if executionMessage}<p class="muted">{executionMessage}</p>{/if}
+            </div>
+          {/if}
         </aside>
       </section>
 
@@ -459,6 +618,14 @@
   .risky { color: var(--danger); }
   li { color: var(--muted); margin-bottom: 8px; }
   .provider { margin-top: 18px; }
+  .review-card{margin-top:12px;display:grid;gap:8px;padding:12px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02)}
+  .review-card p{margin:0}
+  .confirm-line{display:flex;align-items:center;gap:8px;color:var(--muted)}
+  .confirm-line input{width:auto}
+  .suggestions{margin-top:14px;display:grid;gap:8px}
+  .suggestions h3{margin:0;font-size:1rem}
+  .suggestion-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border:1px solid var(--border);border-radius:12px}
+  .suggestion-item code{overflow:auto}
   .provider-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   .provider-actions{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
   .muted{color:var(--muted)}

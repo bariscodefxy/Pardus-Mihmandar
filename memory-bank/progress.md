@@ -130,3 +130,51 @@ Implement desktop safe command approval pipeline UX:
 1. Convert command suggestions into structured safety review cards.
 2. Add explicit approval gate and confirmation state.
 3. Keep command execution path disabled by default unless manually approved.
+
+### Desktop Safety Pipeline Completed
+Completed:
+- Added structured command safety review in desktop app with explicit confirmation gate.
+- Added command suggestion detection from assistant replies and one-click "Review safely" handoff.
+- Added non-blocking desktop audit event creation for:
+  - `command.reviewed`
+  - `command.approval_requested`
+- Kept execution auto-run disabled (manual approval required path only).
+
+### Backend API Endpoints Expansion Completed
+Completed:
+- Added `audit_logs` API support:
+  - `GET /api/audit-logs`
+  - `POST /api/audit-logs`
+- Added missing content/conversation APIs:
+  - `GET/POST /api/workspaces`
+  - `GET/POST /api/pages`
+  - `GET/POST /api/notes`
+  - `GET/POST /api/tasks`
+  - `GET/POST /api/snippets`
+  - `GET/POST /api/conversations`
+- Added schema support migration:
+  - `pages`
+  - `conversations`
+  - `conversation_messages`
+- Added models, request validators, and controllers for all new endpoint groups.
+
+### Backend Verification Upgrade
+Completed:
+- PHP lint check across backend app/routes/migrations/tests: no syntax errors.
+- `php artisan test` passes: 4 tests, 29 assertions.
+- `php artisan route:list --path=api` confirms API route registration for all required MVP endpoint groups.
+
+### Runtime Constraint Update
+Current constraint:
+- Laravel test/process commands require `TMP` and `TEMP` to point to backend-local writable temp directory (`web/backend/storage/tmp`) due host permission behavior.
+
+### Updated Current Status
+- Backend API endpoint scope for current MVP is implemented and validated locally.
+- Desktop app safety review and command-approval preparation flow is implemented.
+- Backend remains intentionally hidden from Git (`web/backend/` ignored), per explicit user decision.
+
+### Updated Next Recommended Step
+Proceed with documentation and hardening:
+1. Update OpenAPI docs to include all new endpoints.
+2. Add tests for provider connection test endpoint and hosted chat credit/error behavior.
+3. Add pagination/filter parameters where needed for larger usage histories.

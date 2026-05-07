@@ -31,6 +31,12 @@ export type ChatMessage = {
   role: 'system' | 'user' | 'assistant';
   content: string;
 };
+export type AuditLogPayload = {
+  event: string;
+  actor?: string;
+  level?: 'info' | 'warning' | 'high_risk';
+  metadata?: Record<string, unknown>;
+};
 
 export class ApiError extends Error {
   constructor(public readonly status: number, message: string) {
@@ -86,5 +92,10 @@ export const desktopApi = {
     apiFetch<{ reply: string; credits_used: number; request_id: number }>('/chat', {
       method: 'POST',
       body: JSON.stringify({ message, model })
+    }, token),
+  createAuditLog: (token: string, payload: AuditLogPayload) =>
+    apiFetch<{ audit_log: { id: number } }>('/audit-logs', {
+      method: 'POST',
+      body: JSON.stringify(payload)
     }, token)
 };

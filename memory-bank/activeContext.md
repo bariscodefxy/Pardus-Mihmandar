@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Phase
-Desktop integration phase in progress after web frontend account integration completion. Backend is locally runnable/tested but intentionally private and ignored by Git.
+Backend API completion phase finished for MVP endpoint scope; desktop safe-command flow integrated. Backend remains locally runnable/tested and intentionally private/ignored by Git.
 
 ## Latest User Request
 Continue implementation and keep Memory Bank up to date.
@@ -50,9 +50,39 @@ Completed desktop MVP integration updates:
 - Fixed desktop blank screen on Svelte 5 by replacing `new App(...)` with `mount(...)` in:
   - `app/src/main.ts`
 
+Completed desktop safety flow updates:
+- Added structured command safety review card in desktop app with:
+  - What it does
+  - Why it may be needed
+  - What can go wrong
+  - Safer alternatives
+  - Explicit confirmation gate
+- Added detected command suggestion extraction from assistant responses and "Review safely" action.
+- Added audit logging calls from desktop safety flow for:
+  - `command.reviewed`
+  - `command.approval_requested`
+
+Completed backend API expansion:
+- Added `audit_logs` backend API:
+  - `GET /api/audit-logs`
+  - `POST /api/audit-logs`
+- Added missing content/conversation APIs:
+  - `GET/POST /api/workspaces`
+  - `GET/POST /api/pages`
+  - `GET/POST /api/notes`
+  - `GET/POST /api/tasks`
+  - `GET/POST /api/snippets`
+  - `GET/POST /api/conversations`
+- Added missing backend tables/models/requests/controllers for:
+  - `pages`
+  - `conversations`
+  - `conversation_messages`
+  - `audit_logs`
+
 ## Verification Completed
 Backend verification:
-- `php artisan test` passes: 2 tests, 8 assertions.
+- `php artisan test` passes: 4 tests, 29 assertions.
+- `php artisan route:list --path=api` confirms required API routes are registered.
 
 Frontend verification:
 - `npm run --prefix web/frontend check` passes: 0 errors, 0 warnings.
@@ -60,13 +90,14 @@ Frontend verification:
 
 Desktop frontend verification:
 - `npm run --prefix app build` passes after desktop integration and Svelte 5 bootstrap fix.
+- `npm run --prefix app build` passes after safety review + command suggestion + audit integration updates.
 
 ## Known Issues / Constraints
 - Cargo is currently not on PATH in this shell/session for Tauri CLI (`cargo metadata` not found).
 - Rustup shim reports metadata/path issues; direct toolchain binaries work and are preferred.
 - Full installer bundling has not been run in current state.
 - Web frontend `npm audit` reports 3 low-severity vulnerabilities through SvelteKit's transitive `cookie` dependency. `npm audit fix --force` would apply a breaking downgrade path, so it was not applied.
-- Symfony Process/Laravel commands need `TMP` and `TEMP` redirected to a writable workspace-local temp directory on this machine.
+- Symfony Process/Laravel commands need `TMP` and `TEMP` redirected to backend-local writable temp path (`web/backend/storage/tmp`) on this machine.
 - PowerShell constrained language mode emits a noisy output-encoding warning; it has been non-blocking.
 
 ## Current Visible Git Changes
@@ -91,11 +122,11 @@ Earlier frontend-focused changes include:
 Backend files remain hidden by `web/backend/` ignore rule.
 
 ## Next Recommended Step
-Implement desktop safe command approval pipeline UI state and flow:
-1. Parse/surface command suggestions in structured cards.
-2. Show risk analysis fields (what it does, why needed, what can go wrong, safer alternatives).
-3. Enforce explicit confirmation gate before any execution action.
-4. Keep execution disabled by default and separate from model output path.
+Implement API documentation and endpoint hardening pass:
+1. Update OpenAPI docs to include newly added workspace/page/note/task/snippet/conversation/audit endpoints.
+2. Add feature tests for provider settings test endpoint and chat endpoint credit behavior.
+3. Add pagination/filter query parameters where needed for dashboard-scale usage history.
+4. Keep backend private (`web/backend/` ignored) unless user explicitly requests publication.
 
 ## Important Safety Constraint
 Do not let AI-generated commands run automatically. The app may explain and prepare commands, but execution must require explicit approval through a safety pipeline.
