@@ -1,44 +1,83 @@
-<nav class="nav container">
-  <a class="brand" href="/">Pardus Mihmandar</a>
-  <div class="links">
-    <a href="/docs">Docs</a>
-    <a href="/login">Login</a>
-    <a class="button" href="/register">Create account</a>
-  </div>
-</nav>
-
-<main class="container hero">
-  <section>
-    <p class="eyebrow">Linux guidance with safety built in</p>
-    <h1>A calm AI guide for Debian beginners.</h1>
-    <p class="lead">Understand commands, solve Linux problems, keep notes, and choose hosted credits or local Ollama/LM Studio without unsafe automation.</p>
-    <div class="actions">
-      <a class="button" href="/register">Start with hosted credits</a>
-      <a class="button secondary" href="/docs">See how safety works</a>
+<main class="container landing">
+  <section class="hero card">
+    <div>
+      <p class="eyebrow">Debian-first AI guide</p>
+      <h1>Notion + Copilot, rebuilt for Linux beginners.</h1>
+      <p class="lead">
+        Pardus Mihmandar explains commands, prevents risky mistakes, and helps users learn Linux step by step with hosted
+        credits or local Ollama/LM Studio.
+      </p>
+      <div class="hero-actions">
+        <a class="button" href="/register">Start free with daily credits</a>
+        <a class="button secondary" href="/docs">Read safety docs</a>
+      </div>
+      <p class="footnote">No auto-executed AI commands. Every risky operation requires explicit approval.</p>
     </div>
-  </section>
-  <aside class="card terminal">
-    <span class="dot"></span><span class="dot amber"></span><span class="dot green"></span>
-    <pre>$ apt remove package
+    <aside class="terminal">
+      <p class="terminal-label">Safety preview</p>
+      <pre>$ sudo apt remove network-manager
 Risk: high
-Why: removes installed software
-Safer: simulate first with apt -s remove</pre>
-  </aside>
+Reason: package removal + privilege escalation
+Safer path: apt -s remove network-manager
+Action: manual approval required</pre>
+    </aside>
+  </section>
+
+  <section class="feature-grid">
+    <article class="card feature">
+      <h2>Hosted Mode</h2>
+      <p>Daily credits, account sync, usage history, and managed inference through backend infrastructure.</p>
+    </article>
+    <article class="card feature">
+      <h2>Local Mode</h2>
+      <p>Connect directly to Ollama or LM Studio from desktop with zero hosted credit consumption.</p>
+    </article>
+    <article class="card feature">
+      <h2>Safety Layer</h2>
+      <p>Risk classification, explanation cards, safer alternatives, and explicit command approval gates.</p>
+    </article>
+  </section>
+
+  <section class="split">
+    <article class="card pane">
+      <h3>What beginners get</h3>
+      <ul>
+        <li>Plain-language Linux explanations</li>
+        <li>Command breakdown with risk context</li>
+        <li>Workspace for notes, tasks, and snippets</li>
+        <li>Guided learning flow for Debian basics</li>
+      </ul>
+    </article>
+    <article class="card pane">
+      <h3>What instructors can demo</h3>
+      <ul>
+        <li>Web + desktop account integration</li>
+        <li>Credits model and usage tracking</li>
+        <li>Local-provider interoperability</li>
+        <li>Security-first command handling model</li>
+      </ul>
+    </article>
+  </section>
 </main>
 
 <style>
-  .nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
-  .brand { font-weight: 800; letter-spacing: -0.03em; }
-  .links { display: flex; gap: 18px; align-items: center; color: var(--muted); }
-  .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; min-height: 78vh; }
-  .eyebrow { color: var(--primary); text-transform: uppercase; letter-spacing: .14em; font-size: .78rem; }
-  h1 { font-size: clamp(3rem, 8vw, 6.5rem); line-height: .9; letter-spacing: -.08em; margin: 0; }
-  .lead { color: var(--muted); font-size: 1.15rem; max-width: 640px; line-height: 1.7; }
-  .actions { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
-  .terminal { padding: 22px; min-height: 300px; }
-  .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: var(--danger); margin-right: 8px; }
-  .amber { background: var(--primary); }
-  .green { background: var(--terminal); }
-  pre { white-space: pre-wrap; color: var(--terminal); line-height: 1.8; margin-top: 34px; }
-  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; } .links { gap: 10px; font-size: .9rem; } }
+  .landing{display:grid;gap:22px}
+  .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;padding:26px}
+  .eyebrow{color:var(--primary);text-transform:uppercase;letter-spacing:.12em;font-size:.75rem;margin:0 0 8px}
+  h1{margin:0;font-size:clamp(2rem,5vw,4.4rem);line-height:.95;letter-spacing:-.05em}
+  .lead{color:var(--muted);line-height:1.7;font-size:1.05rem;max-width:64ch}
+  .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 8px}
+  .footnote{margin:0;color:var(--muted);font-size:.92rem}
+  .terminal{border:1px solid var(--border);border-radius:16px;background:#09111b;padding:16px}
+  .terminal-label{margin:0;color:var(--primary);font-size:.82rem;text-transform:uppercase;letter-spacing:.12em}
+  pre{margin:10px 0 0;color:#8ae4af;line-height:1.7;white-space:pre-wrap}
+  .feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .feature{padding:18px}
+  .feature h2{margin:0 0 8px;font-size:1.1rem}
+  .feature p{margin:0;color:var(--muted);line-height:1.65}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .pane{padding:20px}
+  .pane h3{margin:0 0 12px}
+  ul{margin:0;padding-left:18px;color:var(--muted);display:grid;gap:8px}
+  @media(max-width:980px){.hero{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr}.split{grid-template-columns:1fr}}
 </style>
