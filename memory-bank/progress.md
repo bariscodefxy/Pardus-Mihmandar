@@ -88,3 +88,45 @@ Begin desktop API integration:
 2. Desktop provider settings sync with backend.
 3. Desktop credits/usage fetch for hosted mode.
 4. Preserve strict separation: local mode must not consume hosted credits.
+
+### Desktop API Integration Continued
+Completed:
+- Added desktop API client in `app/src/lib/api/client.ts`.
+- Added desktop session store in `app/src/lib/stores/session.ts`.
+- Wired desktop login/logout and session persistence.
+- Wired desktop app shell to load user/credits/provider settings from backend.
+- Wired provider settings save flow from desktop.
+- Added desktop chat message timeline with loading/error states.
+- Added hosted vs local provider branching in desktop chat:
+  - Hosted mode uses backend `/api/chat`.
+  - Local mode calls Ollama or LM Studio endpoints directly.
+
+### Desktop Contract and Runtime Fixes
+Completed:
+- Fixed hosted chat payload/response contract mismatch in desktop app:
+  - Send `message` string to `/api/chat`.
+  - Read `reply` from backend response.
+- Added provider connection test action in desktop UI:
+  - Hosted test via authenticated `/api/me`.
+  - Ollama test via `GET {baseUrl}/api/tags`.
+  - LM Studio test via `GET {baseUrl}/v1/models`.
+- Fixed Svelte 5 blank screen by updating app bootstrap:
+  - `app/src/main.ts` changed from `new App(...)` to `mount(App, ...)`.
+
+### Verification Update
+Completed:
+- `npm run --prefix app build` passes after the desktop chat/provider/bootstrap updates.
+
+Current blocker:
+- `npm run --prefix app tauri -- build --no-bundle` currently fails in this shell because `cargo` is not on PATH (`cargo metadata` not found).
+
+### Updated Current Status
+- Web frontend MVP account integration is complete and verified.
+- Desktop MVP integration is now functional for auth/session, credits load, provider settings, provider tests, and basic hosted/local chat flow.
+- Backend remains intentionally hidden from Git (`web/backend/` ignored) by explicit user decision.
+
+### Updated Next Recommended Step
+Implement desktop safe command approval pipeline UX:
+1. Convert command suggestions into structured safety review cards.
+2. Add explicit approval gate and confirmation state.
+3. Keep command execution path disabled by default unless manually approved.

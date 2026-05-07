@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Phase
-Web frontend account integration phase completed for MVP scope. Backend is locally runnable/tested but intentionally private and ignored by Git.
+Desktop integration phase in progress after web frontend account integration completion. Backend is locally runnable/tested but intentionally private and ignored by Git.
 
 ## Latest User Request
 Continue implementation and keep Memory Bank up to date.
@@ -31,6 +31,25 @@ Completed web API integration for auth and account pages:
   - `/api/devices`
   - `/api/devices/{id}` (revoke)
 
+Completed desktop MVP integration updates:
+- Added desktop API client and local session store:
+  - `app/src/lib/api/client.ts`
+  - `app/src/lib/stores/session.ts`
+- Wired desktop login/logout/session flow to backend auth endpoints.
+- Wired desktop workspace load to `/api/me`, `/api/credits`, `/api/provider-settings`.
+- Added provider settings save flow from desktop to `/api/provider-settings`.
+- Added desktop chat pipeline:
+  - Hosted mode -> `/api/chat`
+  - Local mode -> direct Ollama (`/api/chat`) or LM Studio (`/v1/chat/completions`)
+- Fixed hosted chat request contract mismatch in desktop client:
+  - Send `message` string and consume backend `reply` field.
+- Added desktop provider connection test button/flow:
+  - Hosted: token/session validation via `/api/me`
+  - Ollama: `GET {baseUrl}/api/tags`
+  - LM Studio: `GET {baseUrl}/v1/models`
+- Fixed desktop blank screen on Svelte 5 by replacing `new App(...)` with `mount(...)` in:
+  - `app/src/main.ts`
+
 ## Verification Completed
 Backend verification:
 - `php artisan test` passes: 2 tests, 8 assertions.
@@ -39,19 +58,25 @@ Frontend verification:
 - `npm run --prefix web/frontend check` passes: 0 errors, 0 warnings.
 - `npm run --prefix web/frontend build` passes.
 
-Desktop/Rust verification from previous phase:
-- `cargo check` in `app/src-tauri` passes.
-- `npm run tauri -- build --no-bundle` passes.
+Desktop frontend verification:
+- `npm run --prefix app build` passes after desktop integration and Svelte 5 bootstrap fix.
 
 ## Known Issues / Constraints
+- Cargo is currently not on PATH in this shell/session for Tauri CLI (`cargo metadata` not found).
 - Rustup shim reports metadata/path issues; direct toolchain binaries work and are preferred.
-- Full installer bundling has not been run; only `--no-bundle` Tauri build was verified.
+- Full installer bundling has not been run in current state.
 - Web frontend `npm audit` reports 3 low-severity vulnerabilities through SvelteKit's transitive `cookie` dependency. `npm audit fix --force` would apply a breaking downgrade path, so it was not applied.
 - Symfony Process/Laravel commands need `TMP` and `TEMP` redirected to a writable workspace-local temp directory on this machine.
 - PowerShell constrained language mode emits a noisy output-encoding warning; it has been non-blocking.
 
 ## Current Visible Git Changes
-Current frontend-focused changes include:
+Current visible desktop-focused changes include:
+- `app/src/main.ts`
+- `app/src/App.svelte`
+- `app/src/lib/api/client.ts`
+- `app/src/lib/stores/session.ts`
+
+Earlier frontend-focused changes include:
 - `web/frontend/src/lib/api/client.ts`
 - `web/frontend/src/lib/stores/auth.ts`
 - `web/frontend/src/routes/login/+page.svelte`
@@ -66,11 +91,11 @@ Current frontend-focused changes include:
 Backend files remain hidden by `web/backend/` ignore rule.
 
 ## Next Recommended Step
-Start desktop app API integration to match web functionality:
-1. Desktop login/session wiring to backend auth endpoints.
-2. Desktop provider settings sync with backend endpoints.
-3. Desktop usage/credits fetch in app shell.
-4. Keep local provider mode separated from hosted credits logic.
+Implement desktop safe command approval pipeline UI state and flow:
+1. Parse/surface command suggestions in structured cards.
+2. Show risk analysis fields (what it does, why needed, what can go wrong, safer alternatives).
+3. Enforce explicit confirmation gate before any execution action.
+4. Keep execution disabled by default and separate from model output path.
 
 ## Important Safety Constraint
 Do not let AI-generated commands run automatically. The app may explain and prepare commands, but execution must require explicit approval through a safety pipeline.
