@@ -129,10 +129,10 @@
 
 <PageCard title="Providers" description="Choose hosted credits or connect local Ollama/LM Studio from the desktop app.">
   {#if loading}
-    <p>Loading provider settings...</p>
+    <p class="status" role="status" aria-live="polite">Loading provider settings...</p>
   {:else}
-    {#if errorMessage}<p class="error">{errorMessage}</p>{/if}
-    {#if successMessage}<p class="ok">{successMessage}</p>{/if}
+    {#if errorMessage}<p class="status error" role="alert" aria-live="assertive">{errorMessage}</p>{/if}
+    {#if successMessage}<p class="status success" role="status" aria-live="polite">{successMessage}</p>{/if}
 
     <form class="form" on:submit|preventDefault={saveSettings}>
       <label>
@@ -168,14 +168,12 @@
       </div>
     </form>
 
-    {#if testMessage}<p class="meta">{testMessage}</p>{/if}
+    {#if testMessage}<p class="status" role="status" aria-live="polite">{testMessage}</p>{/if}
   {/if}
 </PageCard>
 
 <style>
   .form{display:grid;gap:14px;margin-top:12px}
   .actions{display:flex;gap:10px;flex-wrap:wrap}
-  .error{margin:0 0 8px;color:var(--danger)}
-  .ok{margin:0 0 8px;color:var(--terminal)}
-  .meta{margin:12px 0 0;color:var(--muted)}
+  .status{margin:0 0 8px}
 </style>

@@ -38,11 +38,11 @@
 
 <PageCard title="Usage history" description="Track hosted AI requests, credit cost, provider, model, and status.">
   {#if loading}
-    <p>Loading usage history...</p>
+    <p class="status" role="status" aria-live="polite">Loading usage history...</p>
   {:else if errorMessage}
-    <p class="error">{errorMessage}</p>
+    <p class="status error" role="alert" aria-live="assertive">{errorMessage}</p>
   {:else if usage.length === 0}
-    <p>No hosted AI requests yet.</p>
+    <p class="empty-state">No hosted AI requests yet.</p>
   {:else}
     <div class="list">
       {#each usage as item}
@@ -59,7 +59,6 @@
 </PageCard>
 
 <style>
-  .error{margin:0;color:var(--danger)}
   .list{display:grid;gap:10px}
   .row{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:12px}
   .title{margin:0;color:var(--text)}

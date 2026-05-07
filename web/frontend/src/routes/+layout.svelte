@@ -1,5 +1,28 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { authStore } from '$lib/stores/auth';
   import '../app.css';
+
+  const publicRoutes = new Set(['/', '/docs', '/login', '/register']);
+
+  let routeGuardReady = false;
+  let hasToken = false;
+
+  $: pathname = $page.url.pathname;
+  $: isPublicRoute = publicRoutes.has(pathname);
+  $: hasToken = !!get(authStore).token;
+  $: canRenderRoute = isPublicRoute || hasToken;
+
+  $: if (browser && routeGuardReady && !isPublicRoute && !hasToken) {
+    void goto('/login');
+  }
+
+  if (browser) {
+    routeGuardReady = true;
+  }
 </script>
 
 <header class="site-nav">
@@ -17,5 +40,18 @@
 </header>
 
 <div class="page-shell">
-  <slot />
+  {#if canRenderRoute}
+    <slot />
+  {:else}
+    <main class="container auth-redirect">
+      <section class="card auth-redirect-card">
+        <p class="muted">Redirecting to login...</p>
+      </section>
+    </main>
+  {/if}
 </div>
+
+<style>
+  .auth-redirect{padding:28px 0}
+  .auth-redirect-card{padding:18px}
+</style>

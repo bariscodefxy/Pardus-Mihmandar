@@ -29,3 +29,17 @@ AI-generated commands are never executed automatically. Risky commands must be e
 ## Setup
 
 See `docs/development.md` for full local setup.
+
+## Frontend Production Deploy
+
+`web/frontend` now uses an explicit SvelteKit Node adapter (`@sveltejs/adapter-node`).
+
+Build and run:
+
+```powershell
+.\.tools\node\npm.cmd run --prefix web/frontend build
+$env:PORT="4173"
+$env:ORIGIN="http://localhost:4173"
+$env:VITE_API_BASE_URL="http://localhost:8000/api"
+node web/frontend/build
+```

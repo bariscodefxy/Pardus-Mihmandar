@@ -64,10 +64,10 @@
 
 <PageCard title="Account settings" description="Manage profile, sessions, and security-sensitive provider preferences.">
   {#if loading}
-    <p>Loading settings...</p>
+    <p class="status" role="status" aria-live="polite">Loading settings...</p>
   {:else}
-    {#if errorMessage}<p class="error">{errorMessage}</p>{/if}
-    {#if actionMessage}<p class="ok">{actionMessage}</p>{/if}
+    {#if errorMessage}<p class="status error" role="alert" aria-live="assertive">{errorMessage}</p>{/if}
+    {#if actionMessage}<p class="status success" role="status" aria-live="polite">{actionMessage}</p>{/if}
 
     <section class="panel">
       <h2>Profile</h2>
@@ -78,7 +78,7 @@
     <section class="panel">
       <h2>Devices & sessions</h2>
       {#if devices.length === 0}
-        <p class="meta">No devices registered yet.</p>
+        <p class="empty-state">No devices registered yet.</p>
       {:else}
         <div class="list">
           {#each devices as device}
@@ -108,8 +108,6 @@
   h2{margin:0 0 8px;font-size:1rem}
   .meta{margin:4px 0;color:var(--muted)}
   .title{margin:0;color:var(--text)}
-  .error{margin:0;color:var(--danger)}
-  .ok{margin:0;color:var(--terminal)}
   .list{display:grid;gap:10px}
   .row{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:10px}
   button:disabled{opacity:.75;cursor:not-allowed}

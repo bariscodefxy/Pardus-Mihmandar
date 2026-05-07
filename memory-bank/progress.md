@@ -178,3 +178,57 @@ Proceed with documentation and hardening:
 1. Update OpenAPI docs to include all new endpoints.
 2. Add tests for provider connection test endpoint and hosted chat credit/error behavior.
 3. Add pagination/filter parameters where needed for larger usage histories.
+
+### Production Frontend Design Completed
+Completed:
+- Implemented production-ready frontend visual system in `web/frontend/src/app.css`.
+- Added responsive sticky navigation shell in `web/frontend/src/routes/+layout.svelte`.
+- Rebuilt landing page for premium Linux-native product presentation.
+- Upgraded shared card component (`web/frontend/src/lib/components/PageCard.svelte`).
+- Polished docs page content structure.
+
+Verification:
+- `npm run --prefix web/frontend check` passes: 0 errors, 0 warnings.
+- `npm run --prefix web/frontend build` passes.
+
+### Frontend Hardening and Auth Guard Completed
+Completed:
+- Added route-level auth gating in `web/frontend/src/routes/+layout.svelte` for protected routes.
+- Added consistent loading/error/empty-state patterns across:
+  - dashboard
+  - credits
+  - usage
+  - providers
+  - settings
+- Added accessibility feedback semantics:
+  - `role=\"status\"` + `aria-live=\"polite\"`
+  - `role=\"alert\"` + `aria-live=\"assertive\"`
+
+Verification:
+- `npm run --prefix web/frontend check` passes after hardening changes.
+- `npm run --prefix web/frontend build` passes after hardening changes.
+
+### Frontend Deploy Readiness (Node Adapter + Docker)
+Completed:
+- Migrated frontend from `@sveltejs/adapter-auto` to `@sveltejs/adapter-node`.
+- Added frontend Docker runtime artifacts:
+  - `docker/frontend/Dockerfile`
+  - `docker/frontend/docker-compose.yml`
+  - `docker/frontend/README.md`
+- Updated deploy environment entries in root `.env.example`:
+  - `VITE_API_BASE_URL`
+  - `FRONTEND_PORT`
+  - `ORIGIN`
+- Updated frontend production deployment commands in:
+  - `README.md`
+  - `docs/development.md`
+
+Verification:
+- `npm run --prefix web/frontend check` passes with `adapter-node`.
+- `npm run --prefix web/frontend build` passes with `adapter-node`.
+
+### Updated Current Status
+- Backend API scope is implemented and locally verified.
+- Desktop safety flow is implemented with audit event logging.
+- Web frontend is production-styled, route-guarded, and deploy-ready with explicit Node adapter.
+- Backend remains intentionally hidden from Git by user decision.

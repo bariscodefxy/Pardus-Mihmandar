@@ -79,6 +79,25 @@ Completed backend API expansion:
   - `conversation_messages`
   - `audit_logs`
 
+Completed production frontend hardening:
+- Implemented production-ready website redesign with modern dark-mode-first shadcn/ui-style visual system.
+- Added sticky responsive app shell navigation and polished landing/docs surfaces.
+- Added route-level auth guard in `web/frontend/src/routes/+layout.svelte` to prevent protected-page flash before redirect.
+- Standardized loading/error/empty states across protected pages with reusable status styling.
+- Added accessibility improvements (`role=status`, `role=alert`, `aria-live`).
+
+Completed frontend deploy readiness:
+- Switched SvelteKit from `@sveltejs/adapter-auto` to `@sveltejs/adapter-node`.
+- Added production frontend Docker runtime files:
+  - `docker/frontend/Dockerfile`
+  - `docker/frontend/docker-compose.yml`
+  - `docker/frontend/README.md`
+- Updated deployment environment defaults in `.env.example`:
+  - `VITE_API_BASE_URL`
+  - `FRONTEND_PORT`
+  - `ORIGIN`
+- Updated deploy commands in `README.md` and `docs/development.md`.
+
 ## Verification Completed
 Backend verification:
 - `php artisan test` passes: 4 tests, 29 assertions.
@@ -91,6 +110,12 @@ Frontend verification:
 Desktop frontend verification:
 - `npm run --prefix app build` passes after desktop integration and Svelte 5 bootstrap fix.
 - `npm run --prefix app build` passes after safety review + command suggestion + audit integration updates.
+
+Frontend hardening/deploy verification:
+- `npm run --prefix web/frontend check` passes after auth guard and UX state consistency pass.
+- `npm run --prefix web/frontend build` passes after auth guard and UX state consistency pass.
+- `npm run --prefix web/frontend check` passes after `adapter-node` migration.
+- `npm run --prefix web/frontend build` passes with `adapter-node` active.
 
 ## Known Issues / Constraints
 - Cargo is currently not on PATH in this shell/session for Tauri CLI (`cargo metadata` not found).
@@ -122,10 +147,10 @@ Earlier frontend-focused changes include:
 Backend files remain hidden by `web/backend/` ignore rule.
 
 ## Next Recommended Step
-Implement API documentation and endpoint hardening pass:
-1. Update OpenAPI docs to include newly added workspace/page/note/task/snippet/conversation/audit endpoints.
-2. Add feature tests for provider settings test endpoint and chat endpoint credit behavior.
-3. Add pagination/filter query parameters where needed for dashboard-scale usage history.
+Finalize release documentation and demo artifacts:
+1. Capture updated website screenshots for `docs/screenshots`.
+2. Add end-to-end local demo runbook (backend + frontend + desktop login path).
+3. Update API docs/OpenAPI skeleton to include all newly added backend endpoint groups.
 4. Keep backend private (`web/backend/` ignored) unless user explicitly requests publication.
 
 ## Important Safety Constraint

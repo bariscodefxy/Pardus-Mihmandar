@@ -44,15 +44,15 @@
 
 <PageCard title="Credits" description="Hosted AI requests consume credits. Local Ollama and LM Studio do not.">
   {#if loading}
-    <p>Loading credits...</p>
+    <p class="status" role="status" aria-live="polite">Loading credits...</p>
   {:else if errorMessage}
-    <p class="error">{errorMessage}</p>
+    <p class="status error" role="alert" aria-live="assertive">{errorMessage}</p>
   {:else}
     <p class="balance">{balance} credits available</p>
     <p class="meta">Daily allowance: {dailyAllowance}</p>
 
     {#if transactions.length === 0}
-      <p class="meta">No credit transactions yet.</p>
+      <p class="empty-state">No credit transactions yet.</p>
     {:else}
       <div class="list">
         {#each transactions as item}
@@ -73,7 +73,7 @@
 
 <style>
   .balance{padding:18px;border:1px solid var(--border);border-radius:16px;color:var(--primary);margin:0}
-  .error{margin:0;color:var(--danger)}
+  .status{margin:0}
   .meta{color:var(--muted)}
   .list{display:grid;gap:10px;margin-top:12px}
   .row{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:12px}

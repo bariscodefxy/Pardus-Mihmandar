@@ -55,7 +55,7 @@
 
 <PageCard title="Dashboard" description="Your Linux learning workspace, credit status, provider mode, and recent assistant activity.">
   {#if loading}
-    <p>Loading dashboard...</p>
+    <p class="status" role="status" aria-live="polite">Loading dashboard...</p>
   {:else}
     <div class="topbar">
       <p class="welcome">Welcome, {user?.name ?? 'User'}.</p>
@@ -63,7 +63,7 @@
         {loggingOut ? 'Logging out...' : 'Logout'}
       </button>
     </div>
-    {#if errorMessage}<p class="error">{errorMessage}</p>{/if}
+    {#if errorMessage}<p class="status error" role="alert" aria-live="assertive">{errorMessage}</p>{/if}
     <div class="grid">
       <div class="mini">Credits<br><strong>{credits}</strong></div>
       <div class="mini">Provider<br><strong>Hosted</strong></div>
@@ -75,7 +75,7 @@
 <style>
   .topbar{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px}
   .welcome{margin:0;color:var(--muted)}
-  .error{margin:0 0 16px;color:var(--danger)}
+  .status{margin:0 0 16px}
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .mini{border:1px solid var(--border);border-radius:16px;padding:16px;color:var(--muted)}
   strong{color:var(--text);font-size:1.8rem}

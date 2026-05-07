@@ -103,6 +103,33 @@ select {
   color: var(--muted);
 }
 
+.status {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+}
+
+.status.error {
+  border-color: rgba(255, 111, 121, 0.45);
+  color: var(--danger);
+}
+
+.status.success {
+  border-color: rgba(105, 216, 154, 0.4);
+  color: var(--ok);
+}
+
+.empty-state {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.01);
+}
+
 .page-shell {
   padding: 24px 0 36px;
 }

@@ -28,6 +28,30 @@ npm install
 npm run dev
 ```
 
+### Frontend Production Build (Node Adapter)
+
+`web/frontend` is configured with `@sveltejs/adapter-node`.
+
+```powershell
+cd web/frontend
+npm run check
+npm run build
+```
+
+Run generated server bundle:
+
+```powershell
+$env:PORT="4173"
+$env:ORIGIN="http://localhost:4173"
+$env:VITE_API_BASE_URL="http://localhost:8000/api"
+node build
+```
+
+Required env vars:
+- `VITE_API_BASE_URL`: backend API base URL for frontend requests.
+- `PORT`: Node server listen port.
+- `ORIGIN`: public origin for SvelteKit runtime.
+
 ## Desktop App
 
 ```powershell
